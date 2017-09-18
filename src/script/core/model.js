@@ -55,7 +55,7 @@ export default class model {
 				// 将值记录到 _food
 				Reflect.set(this, "_food", value); 
 				// 更新 zone
-				this.updateZone(value, "food"); 
+				value !== undefined && this.updateZone(value, "food"); 
 			}
 		}); 
 	}

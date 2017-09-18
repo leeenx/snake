@@ -38,7 +38,7 @@ snakeGame.start();
 // snakeGame.destory(); 
 
 // 重新开始游戏 
-// snakeGame.restart(); // 相当于 destroy + init
+// snakeGame.restart(); // 相当于 destroy -> init -> start
 
 // 暂停游戏 
 // snakeGame.pause(); 
@@ -66,7 +66,7 @@ snakeGame.event.on("gameover", (type) => {
 snakeGame.event.on("eat", (food) => {
 	console.log("吃到食物，当前长度: " + snakeGame.length); 
 	// 提速
-	snakeGame.speed = 1 + snakeGame.length / 10
+	snakeGame.speed = 1.5 + snakeGame.length / 10
 }); 
 
 // 吃到东西前

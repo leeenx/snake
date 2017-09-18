@@ -135,6 +135,8 @@ export default class view {
 		// 通过 model.zone 创建一张快速定位表
 		this.createQuickMap(this.data.zone); 
 
+		let aaa = 0; 
+
 		// 同步 model 的初始数据
 		for(let {data} of this.data.snake) { 
 			this.snake.push(data); 
@@ -150,6 +152,7 @@ export default class view {
 		}
 		stage.removeChildren(); 
 		this.collection = []; 
+		this.snake.clean(); 
 	}
 	// 绘制四条边界
 	drawBounds() {
@@ -227,7 +230,7 @@ export default class view {
 
 	// ticker update
 	updateTicker() { 
-		this.render(); 
+		// this.render(); 
 	}
 
 	// 状态更新
@@ -242,7 +245,8 @@ export default class view {
 		// snakeA === model.snake, snakeB === view.snake
 		this.updateTail(snakeA, snakeB)
 			.then(() => this.updateHead(snakeA, snakeB))
-			.catch(() => this.wholeUpdate(snakeA, snakeB));
+			.catch(() => this.wholeUpdate(snakeA, snakeB))
+			.then(() => this.render())
 	}
 
 	// 检查蛇头
@@ -284,7 +288,7 @@ export default class view {
 			(resolve, reject) => {
 				// snakeA 与 snakeB 做尾指针比较
 				let tailA = snakeA.last(), tailB; 
-				while(snakeB.length !== 0) {
+				while(snakeB.length !== 0) { 
 					tailB = snakeB.last(); 
 					// 尾节点匹配
 					if(tailA.data === tailB.data) { 

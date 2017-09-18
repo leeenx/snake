@@ -7677,8 +7677,6 @@ var control = function () {
 			_timer2.default.setTimeout(function () {
 				return _this.gameover("timeout");
 			}, 300000);
-
-			// setTimeout(() => this.speed = 3, 5000); 
 		}
 		// 销毁 
 
@@ -7768,6 +7766,7 @@ var control = function () {
 		value: function restart() {
 			this.destroy();
 			this.init(this.config);
+			this.start();
 		}
 
 		// gameover
@@ -7911,7 +7910,7 @@ var model = function () {
 				// 将值记录到 _food
 				Reflect.set(_this, "_food", value);
 				// 更新 zone
-				_this.updateZone(value, "food");
+				value !== undefined && _this.updateZone(value, "food");
 			}
 		});
 	}
@@ -8261,6 +8260,8 @@ var view = function () {
 			// 通过 model.zone 创建一张快速定位表
 			this.createQuickMap(this.data.zone);
 
+			var aaa = 0;
+
 			// 同步 model 的初始数据
 			var _iteratorNormalCompletion = true;
 			var _didIteratorError = false;
@@ -8321,6 +8322,7 @@ var view = function () {
 
 			stage.removeChildren();
 			this.collection = [];
+			this.snake.clean();
 		}
 		// 绘制四条边界
 
@@ -8446,9 +8448,9 @@ var view = function () {
 
 	}, {
 		key: 'updateTicker',
-		value: function updateTicker() {
-			this.render();
-		}
+		value: function updateTicker() {}
+		// this.render(); 
+
 
 		// 状态更新
 
@@ -8474,6 +8476,8 @@ var view = function () {
 				return _this2.updateHead(snakeA, snakeB);
 			}).catch(function () {
 				return _this2.wholeUpdate(snakeA, snakeB);
+			}).then(function () {
+				return _this2.render();
 			});
 		}
 
@@ -17339,7 +17343,8 @@ var Chain = function () {
 		value: function clean() {
 			// 清空数组
 			this.length = this.chain.length = this.FREELIST.length = 0;
-			this.HEAD = this.TAIL = this.FREE = 0;
+			this.HEAD = this.TAIL = -1;
+			this.FREE = 0;
 		}
 		// 动态分配 FREE
 

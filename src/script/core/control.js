@@ -106,7 +106,6 @@ export default class control {
 		// 总计时
 		timer.setTimeout(() => this.gameover("timeout"), 300000);
 
-		// setTimeout(() => this.speed = 3, 5000); 
 	}
 	// 销毁 
 	destroy() {
@@ -177,6 +176,7 @@ export default class control {
 	restart() {
 		this.destroy(); 
 		this.init(this.config); 
+		this.start(); 
 	}
 
 	// gameover
