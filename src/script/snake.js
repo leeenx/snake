@@ -8066,17 +8066,17 @@ var model = function () {
 	}, {
 		key: 'feed',
 		value: function feed() {
-			var index = 0,
+			var index = -1,
 			    start = 0,
 			    count = this.zone.length - this.snake.length,
-			    end = Math.random() * count >> 0;
+			    end = (Math.random() * count >> 0) + 1;
 			if (0 === count) {
 				// 无法投食
 				this.food = undefined;
 				return;
 			}
 			while (start !== end) {
-				this.zone[index++].fill === undefined && ++start;
+				this.zone[++index].fill === undefined && ++start;
 			}
 			this.food = index;
 		}
@@ -17341,9 +17341,9 @@ var Chain = function () {
 	}, {
 		key: "clean",
 		value: function clean() {
-			// 清空数组
+			// 清空数组 
 			this.length = this.chain.length = this.FREELIST.length = 0;
-			this.HEAD = this.TAIL = -1;
+			this.POINTER = this.HEAD = this.TAIL = -1;
 			this.FREE = 0;
 		}
 		// 动态分配 FREE

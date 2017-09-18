@@ -179,17 +179,17 @@ export default class model {
 
 	// 随机喂食
 	feed() {
-		let index = 0,  
+		let index = -1,  
 		start = 0,  
 		count = this.zone.length - this.snake.length,  
-		end = (Math.random() * count)>>0; 
+		end = (Math.random() * count>>0) + 1; 
 		if(0 === count) {
 			// 无法投食
 			this.food = undefined; 
 			return ;
 		}
 		while(start !== end) {
-			this.zone[index++].fill === undefined && ++start; 
+			this.zone[++index].fill === undefined && ++start; 
 		} 
 		this.food = index; 
 	}
