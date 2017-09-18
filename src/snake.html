@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>H5小游戏100例: 贪吃蛇</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" />
+  <link href="css/snake.css" rel="stylesheet">
+</head>
+
+<body>
+	<div class="snake-game"></div>
+</body>
+<script src="script/lib/pixi.js"></script>
+<script src="script/snake.js"></script>
+<script>
+// 创建一个游戏对象
+var snakeGame = new SnakeClass(document.querySelector(".snake-game"));
+// 初始化游戏 
+snakeGame.init(
+	{
+		width: 640, 
+		height: 640, 
+		row: 40, 
+		column: 40, 
+		border: 0x999999, 
+		color: 0x000000, // 蛇的节点颜色
+		food: 0x990000, // 食物的颜色
+		min: 4, // 初始长度
+		speed: 1.5 // 速度标量
+	}
+); 
+// 开始游戏 
+snakeGame.start(); 
+
+/* S 游戏 API */
+
+// 注销游戏 
+// snakeGame.destory(); 
+
+// 重新开始游戏 
+// snakeGame.restart(); // 相当于 destroy + init
+
+// 暂停游戏 
+// snakeGame.pause(); 
+
+// 恢复游戏
+// snakeGame.resume(); 
+
+// 控制游戏速度，数值越大速度越快
+// snakeGame.speed = 1; 
+
+// 游戏方向
+// snakeGame.turn(); // 四个值：left, right, up, down。
+
+/* E 游戏 API */
+
+
+/* S 游戏的事件 */
+
+// 游戏结束
+snakeGame.event.on("gameover", (type) => {
+	console.log("游戏结束。结束类型是：" + type); 
+}); 
+
+// 吃到东西
+snakeGame.event.on("eat", (food) => {
+	console.log("吃到食物，当前长度: " + snakeGame.length); 
+	// 提速
+	snakeGame.speed = 1 + snakeGame.length / 10
+}); 
+
+// 吃到东西前
+snakeGame.event.on("before-eat", () => {
+	console.log("吃到食物之前的长度：" + snakeGame.length)
+})
+
+/* E 游戏的事件 */
+
+/* S 控制游戏 */
+window.addEventListener("keydown", (e) => { 
+	switch(e.keyCode) {
+		case 37: snakeGame.turn("left"); break; 
+		case 38: snakeGame.turn("up"); break; 
+		case 39: snakeGame.turn("right"); break; 
+		case 40: snakeGame.turn("down"); break; 
+	}
+}); 
+/* E 控制游戏 */
+
+</script>
+</html>

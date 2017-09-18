@@ -1,0 +1,1 @@
+PIXI.utils.skipHello(); 

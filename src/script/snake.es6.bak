@@ -1,0 +1,252 @@
+// gsap 方法
+import './gsap/TweenLite'; 
+
+// 获取 Graphics 的 content-box
+import './pixijs-modules/getContentBoxSize.es6'; 
+
+// 不显示 PIXI 信息
+import './pixijs-modules/noHello.es6'; 
+
+// 随机打散数组 
+import randomList from './utils/randomList.es6'; 
+
+// timer 控制器
+
+export class SnakeClass {
+	constructor(dom) {
+		let app = new PIXI.Application(
+			750, 
+			1206, 
+			{ 
+				transparent: true
+			}
+		); 
+		dom.appendChild(app.view); 
+		this.app = app; 
+		let tickHandle = this.tick.bind(this); 
+		app.ticker.add(tickHandle); // 添加 ticker 刷新 
+	}
+	init(config = {}) {
+		// 初始化
+		this.config = config; // 挂载到 this 下
+
+		// 初始化 model
+		this.initModel(); 
+
+		// 初始化view
+		this.initView(); 
+	}
+
+	tick(...args) {
+		// ticker 回调 
+		this.dirty && this.clearDirty() & this.updateView(); 
+	} 
+	setDirty() {
+		return this.dirty = true; 
+	}
+	clearDirty() {
+		return this.dirty = false; 
+	}
+	pause() {
+		this.app.ticker.stop(); 
+	}
+	resume() {
+		this.app.ticker.start(); 
+	}
+
+	/*************** S model 逻辑分割线 ***************/
+
+	// 初始化 model 
+	initModel() {
+		// shorthand 
+		let {row = 32, column = 32} = this.config; 
+		// 活动区间转化为数组 
+		this.area = new Array(row * column).fill({}).map(
+			(item, index) => { 
+				// 当前 item 在 area 表的位置
+				let [x, y] = [index % column, (index / column)>>0]; 
+				return {
+					index: index, 
+					row: x, 
+					col: y, 
+					type: "free", 
+					left: x > 0 ? y * column + x - 1 : -1, // 左边空格
+					right: x < column - 1 ? y * column + x + 1 : -1, // 右边空格
+					up: y > 0 ? (y - 1) * column + x : -1, // 上方空格
+					down: y < row - 1 ? (y + 1) * column + x : -1 // 下方空格
+				} 
+			}
+		);  
+
+		// 初始化蛇
+		this.initSnake(); 
+
+		// 投食
+		this.feed(); 
+	}
+
+	// 初始化蛇 -- 默认3节
+	initSnake(len = 3) { 
+		let snake = {nodes: []}; 
+
+		// 生成蛇
+		for(let i=0; i<len; ++i) {
+			let index = this.randomCell(); 
+			snake.nodes[i] = {
+				curr: index, 
+				prev: 0 === i ? -1 : snake.nodes[i -1].curr, 
+				next: i == len - 1 ? -1 : this.randomPossable(index), 
+				self: this.area[index] 
+			}
+		}
+
+		// 指定头指针
+		snake.HEAD = snake.nodes[0]; 
+
+		// 指定尾指针 
+		snake.TAIL = snake.nodes[len - 1]; 
+
+		// 运动方向
+		let next = this.randomPossable(snake.HEAD); 
+		let headNode = this.area[snake.HEAD]; 
+		for(let direction of ["left", "right", "up", "down"]) { 
+			if(headNode[direction] === next) {
+				snake.direction = direction; 
+				break; 
+			}
+		} 
+
+		// snake 对象挂载到 this
+		this.snake = snake; 
+	}
+
+	// 随机选定空格并返回
+	randomCell() {
+		let [cell] = randomList(this.area, 1, (item) => item.type === "free"); 
+		return cell; 
+	}
+
+	// 可行空格
+	passable(index) { 
+		let {left, right, up, down} = this.area[index]; 
+		return [left, right, up, down].filter((next) => next > -1 && this.area[next].type === "free"); 
+	}
+
+	// 随机选一个可行空格
+	randomPossable(index) { 
+		let [key, value] = randomList(this.passable(index), 1); 
+		return value; 
+	}
+
+	// 随机投食
+	feed() {
+		let index = this.randomCell(); 
+		index !== -1 && this.updateCell(index, "food") & this.setDirty(); 
+		this.food = index; // 食物的坐标
+	}
+
+	// 更改 area 格子上的状态
+	updateCell(index, type) { 
+		this.area[index].type = type; 
+		this.setDirty(); // 表示需要更新
+	}
+
+	// 移动
+	move() {
+		let snake = this.snake, 
+		headNode = this.area[snake.HEAD], // 蛇头
+		next = headNode[snake.direction], 
+		nextNode = this.area[next]; 
+		if(-1 === next) {
+			// 撞墙 
+			this.hit = "wall"; 
+		} else if("snake" === nextNode.type) {
+			// 咬到自己
+			this.hit = "self"; 
+		} else if("food" === nextNode.type) {
+			// 吃到东西
+			this.hit = "food"; 
+		} else if("free" === nextNode.type) {
+			// 自由前进 
+
+		}
+		this.setDirty(); 
+	}
+
+	// 转向
+	turn(direction) {
+		if(["left", "right", "up", "down"].indexOf(direction) < 0) return ;
+		// 上下左右四个转向
+
+	}
+
+
+	/*************** E model 逻辑分割线 ***************/
+
+	/*************** view 逻辑分割线 ***************/
+
+	// 初始化视图 
+	initView() {
+		// shorthand 
+		let {
+			app, 
+			app: {stage, renderer}, 
+			config: {
+				width = 640, 
+				height = 640, 
+				row = 32, 
+				column = 32, 
+				border = 0x000000, 
+				color = 0x999999, // 蛇的节点颜色
+				min = 2, // 初始长度
+				max = 20, // 通关长度
+				level = 0, // 默认第一关
+				speed = 1 // 速度
+			}
+		} = this; 
+
+		// 舞台的中心坐标
+		stage.center = {x: app.view.width / 2, y: (app.view.width - width + height) / 2}; // 以x做为基准，保证 上右左的空白一致
+
+
+		// 蛇节点的尺寸
+		let nodeSize = {width: width / row, height: height / column}; 
+
+		// 检查蛇节点的宽高是否相等，如果不相等推出一个提示信息
+		Math.abs(nodeSize.width - nodeSize.height) >= Number.EPSILON && console.log("蛇节点不是正方形"); 
+
+		// 初始化视觉上活动区间
+		this.initViewArea(width, height, nodeSize.width, color); 
+	}
+
+	// 创建一个节
+	makeViewNode() {
+		let node = new PIXI.Graphics(); 
+		node.beginFill(0x333333)
+			.drawRect(0, 0, 10, 10)
+			.endFill(); 
+		node.x = node.y = 100; 
+		this.app.stage.addChild(node); 
+		return node; 
+	}
+	// 画墙
+	initViewArea(width, height, thickness, color) { 
+		let stage = this.app.stage; 
+		let wall = (new PIXI.Graphics()).beginFill(0xffffff).lineStyle(Math.min(thickness, 10), color, 1).drawRect(0, 0, width + thickness, height + thickness); 
+
+		wall.pivot.set(wall.cwidth / 2, wall.cheight / 2); 
+		wall.x = stage.center.x; 
+		wall.y = stage.center.y; 
+		stage.addChild(wall); 
+
+		// 活动空间
+		let viewArea = new PIXI.Container(); 
+		viewArea.x = thickness; 
+		viewArea.y = thickness; 
+		this.viewArea = viewArea; 
+	}
+	// 更新视觉
+	updateView() {
+		
+	}
+}
