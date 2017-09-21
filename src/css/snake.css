@@ -1,19 +1,20 @@
 @charset "UTF-8"; 
 
 html,body {
+	position: relative; 
 	width: 100%; 
 	max-width: 540px; 
 	height: 100%;
 	margin: 0;
 	padding: 0; 
 	background-color: #ece060;
+	margin: 0 auto;
 }
 
 .snake-game {
 	position: relative; 
-	max-width: 540px; 
+	width: 100%; 
 	height: auto; 
-	margin: 0 auto;
 }
 
 .snake-game canvas {
