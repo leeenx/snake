@@ -9,6 +9,16 @@
 
 <body>
 	<div class="snake-game"></div>
+	<div class="snake-controller">
+		<div class="snake-direction">
+			<div class="snake-up"></div>
+			<div class="snake-right"></div>
+			<div class="snake-down"></div>
+			<div class="snake-left"></div>
+		</div>
+		<input type="checkbox" class="snake-trigger" checked="checked"> 
+		<input type="button" class="snake-switch">
+	</div>
 </body>
 <script src="script/lib/pixi.js"></script>
 <script src="script/snake.js"></script>
@@ -65,8 +75,6 @@ snakeGame.event.on("gameover", (type) => {
 // 吃到东西
 snakeGame.event.on("eat", (food) => {
 	console.log("吃到食物，当前长度: " + snakeGame.length); 
-	// 提速
-	snakeGame.speed = 1.5 + snakeGame.length / 10
 }); 
 
 // 吃到东西前
@@ -76,15 +84,74 @@ snakeGame.event.on("before-eat", () => {
 
 /* E 游戏的事件 */
 
+// 禁止页面滚动提高体验
+// document.body.addEventListener("touchmove", (e) => e.preventDefault() ); 
+
 /* S 控制游戏 */
-window.addEventListener("keydown", (e) => { 
-	switch(e.keyCode) {
-		case 37: snakeGame.turn("left"); break; 
-		case 38: snakeGame.turn("up"); break; 
-		case 39: snakeGame.turn("right"); break; 
-		case 40: snakeGame.turn("down"); break; 
+{
+	let controller = document.querySelector(".snake-direction"), 
+	curDirection, 
+	{top, left, width, height} = controller.getBoundingClientRect(), 
+	x = left + width / 2, 
+	y = top + height / 2, 
+	deg45 = Math.PI / 4, 
+	deg90 = Math.PI / 2, 
+	deg135 = Math.PI / 2 + deg45, 
+	deg180 = Math.PI, 
+	deg225 = Math.PI + deg45, 
+	deg270 = Math.PI + deg90, 
+	deg315 = Math.PI * 2 - deg45; 
+
+	controller.addEventListener("touchstart", ({targetTouches: [{pageX, pageY}]}) => {
+		checkDirection(pageX - x, pageY - y); 
+	});
+
+	controller.addEventListener("touchmove", ({targetTouches: [{pageX, pageY}]}) => {
+		checkDirection(pageX - x, pageY - y); 
+	}); 
+
+	controller.addEventListener("touchend", ({changedTouches: [{pageX, pageY}]}) => {
+		curDirection = undefined; 
+		controller.className = 'snake-direction'; 
+	}); 
+
+	let checkDirection = function(x, y) {
+		let radian = Math.asin( y / Math.sqrt( Math.pow(x, 2) + Math.pow(y, 2)) ); 
+		// 1~2区间
+		if(x > 0 && y < 0 || x > 0 && y > 0) {
+			radian += deg90; 
+		}
+		// 3~4区间
+		else if(x < 0 && y > 0 || x < 0 && y < 0) {
+			radian = deg270 - radian; 
+		}
+
+		let direction = "up"; 
+		if(radian > deg45 && radian < deg135) {
+			direction = "right";
+		}
+		else if(radian > deg135 && radian < deg225) {
+			direction = "down";
+		}
+		else if(radian > deg225 && radian < deg315) {
+			direction = "left";
+		} 
+		console.log(direction); 
+		direction === curDirection || snakeGame.turn(curDirection = direction, controller.className = "snake-direction " + direction); 
 	}
-}); 
+
+	let keyboradUpdate = ({keyCode}) => { 
+		switch(keyCode) {
+			case 37: snakeGame.turn("left"), controller.className = "snake-direction left"; break; 
+			case 38: snakeGame.turn("up"), controller.className = "snake-direction up"; break; 
+			case 39: snakeGame.turn("right"), controller.className = "snake-direction right"; break; 
+			case 40: snakeGame.turn("down"), controller.className = "snake-direction down"; break; 
+		}
+	}
+	window.addEventListener("keydown", keyboradUpdate); 
+	window.addEventListener("keyup", () => controller.className = "snake-direction");
+}
+
 /* E 控制游戏 */
 
 </script>
