@@ -18,6 +18,10 @@
 		</div>
 		<input type="checkbox" class="snake-trigger" checked="checked"> 
 		<input type="button" class="snake-switch">
+		<div class="snake-timer">时间：300s</div>
+		<div class="snake-speed">
+			<div class="snake-speed-thumb"></div>
+		</div>
 	</div>
 </body>
 <script src="script/lib/pixi.js"></script>
@@ -28,15 +32,17 @@ var snakeGame = new SnakeClass(document.querySelector(".snake-game"));
 // 初始化游戏 
 snakeGame.init(
 	{
+		time: 300000, // 总时间
 		width: 640, 
 		height: 640, 
 		row: 20, 
 		column: 20, 
-		border: 0x999999, 
-		color: 0x000000, // 蛇的节点颜色
+		// 显示屏的边框
+		border: 0x414042, 
+		color: 0x414042, // 蛇的节点颜色
 		food: 0x990000, // 食物的颜色
 		min: 4, // 初始长度
-		speed: 1.5 // 速度标量
+		speed: 3 // 速度标量
 	}
 ); 
 // 开始游戏 
@@ -67,9 +73,15 @@ snakeGame.start();
 
 /* S 游戏的事件 */
 
+// 游戏时间
+let $timer = document.querySelector(".snake-timer"); 
+snakeGame.event.on("countdown", (time) => {
+	$timer.innerHTML = `时间：${time}s`; 
+}); 
+
 // 游戏结束
 snakeGame.event.on("gameover", (type) => {
-	console.log("游戏结束。结束类型是：" + type); 
+	alert("游戏结束。结束类型是：" + type); 
 }); 
 
 // 吃到东西
@@ -85,7 +97,7 @@ snakeGame.event.on("before-eat", () => {
 /* E 游戏的事件 */
 
 // 禁止页面滚动提高体验
-// document.body.addEventListener("touchmove", (e) => e.preventDefault() ); 
+document.body.addEventListener("touchmove", (e) => e.preventDefault() ); 
 
 /* S 控制游戏 */
 {
@@ -136,10 +148,58 @@ snakeGame.event.on("before-eat", () => {
 		else if(radian > deg225 && radian < deg315) {
 			direction = "left";
 		} 
-		console.log(direction); 
 		direction === curDirection || snakeGame.turn(curDirection = direction, controller.className = "snake-direction " + direction); 
 	}
 
+	// 暂停开关
+	let trigger = document.querySelector(".snake-trigger"); 
+	trigger.addEventListener("click", function() {
+		if(this.checked) {
+			snakeGame.pause(); 
+		}
+		else {
+			snakeGame.resume(); 
+		}
+	}); 
+
+	// 电源开关
+	let power =document.querySelector(".snake-switch"); 
+	power.addEventListener("click", () => {
+		snakeGame.restart(); 
+		trigger.checked = false; 
+		trigger.click(); 
+	}); 
+
+	{
+		// 控制速度
+		let thumb = document.querySelector(".snake-speed-thumb"), 
+		x0, y0, 
+		min = 0, max = thumb.parentNode.offsetWidth - 5, 
+		left0, left1; 
+		// 定位 thumb
+		left1 = (snakeGame.speed - .5) * max / 3;
+		thumb.style.left = left1 + "px";  
+
+		thumb.addEventListener("touchstart", 
+			({targetTouches, targetTouches: [{pageX, pageY}]}) => {
+				x0 = pageX, y0 = pageY, left0 = thumb.offsetLeft; 
+			}
+		)
+
+		thumb.addEventListener("touchmove", 
+			({targetTouches, targetTouches: [{pageX, pageY}]}) => {
+				let x = Math.max(Math.min(pageX - x0 + left0, max), 0), y = pageY - y0; 
+				left1 = x; 
+				thumb.style.left = x + "px"; 
+			}
+		)
+
+		thumb.addEventListener("touchend", () => {
+			snakeGame.speed = .5 + (left1 / max) * 3; 
+		})
+	}
+
+	// PC 键盘
 	let keyboradUpdate = ({keyCode}) => { 
 		switch(keyCode) {
 			case 37: snakeGame.turn("left"), controller.className = "snake-direction left"; break; 

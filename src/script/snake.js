@@ -7559,9 +7559,9 @@ var _randomList = require('../lib/utils/randomList');
 
 var _randomList2 = _interopRequireDefault(_randomList);
 
-var _events = require('../lib/utils/events');
+var _Events = require('../lib/utils/Events');
 
-var _events2 = _interopRequireDefault(_events);
+var _Events2 = _interopRequireDefault(_Events);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7598,7 +7598,7 @@ var control = function () {
 		this.update = this.update.bind(this);
 
 		// 挂载事件对象
-		this.event = new _events2.default();
+		this.event = new _Events2.default();
 
 		// 四个方向
 		this.fourDirections = ["left", "up", "right", "down"];
@@ -7656,7 +7656,7 @@ var control = function () {
 			this.view.init({ width: width, height: height, row: row, column: column, border: border, color: color, food: food, data: data });
 
 			// interval 的间隔
-			this.interval = 300;
+			this.interval = 300 / this.speedScalar;
 
 			// 定时更新view
 			this.intervalID = _timer2.default.setInterval(this.update, this.interval);
@@ -7674,9 +7674,16 @@ var control = function () {
 			this.directions = [];
 
 			// 总计时
-			_timer2.default.setTimeout(function () {
-				return _this.gameover("timeout");
-			}, 300000);
+			if (config.time > 0) {
+				var time = config.time / 1000;
+				_timer2.default.setTimeout(function () {
+					return _this.gameover("timeout");
+				}, config);
+				// 倒数
+				_timer2.default.setInterval(function () {
+					return _this.event.dispatch("countdown", --time);
+				}, 1000);
+			}
 		}
 		// 销毁 
 
@@ -7747,7 +7754,7 @@ var control = function () {
 		key: 'start',
 		value: function start() {
 			if (this.GAMEOVER) return;
-			this.resume();
+			// this.resume(); 
 			// 蛇的随机运动方向 
 			var _model = this.model,
 			    leader = _model.leader,
@@ -7757,6 +7764,8 @@ var control = function () {
 			this.directions.push((0, _randomList2.default)(this.fourDirections.filter(function (item) {
 				return leader[item] !== -1 && zone[leader[item]].fill === undefined;
 			}), 1));
+
+			this.update();
 		}
 
 		// 重新开始 
@@ -7825,7 +7834,7 @@ var control = function () {
 
 exports.default = control;
 
-},{"../lib/utils/events":331,"../lib/utils/randomList":334,"../lib/utils/ticker":335,"../lib/utils/timer":336}],327:[function(require,module,exports){
+},{"../lib/utils/Events":330,"../lib/utils/randomList":334,"../lib/utils/ticker":335,"../lib/utils/timer":336}],327:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8087,7 +8096,7 @@ var model = function () {
 
 exports.default = model;
 
-},{"../lib/utils/chain":330,"../lib/utils/randomList":334}],328:[function(require,module,exports){
+},{"../lib/utils/chain":331,"../lib/utils/randomList":334}],328:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8593,7 +8602,7 @@ var view = function () {
 
 exports.default = view;
 
-},{"../lib/gsap/TweenMax":329,"../lib/utils/chain":330,"../lib/utils/getContentBoxSize":332,"../lib/utils/noHello":333}],329:[function(require,module,exports){
+},{"../lib/gsap/TweenMax":329,"../lib/utils/chain":331,"../lib/utils/getContentBoxSize":332,"../lib/utils/noHello":333}],329:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -16949,6 +16958,117 @@ if (_gsScope._gsDefine) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*
+	@ author: leeenx
+	@ 事件封装
+	@ object.on(event, fn) // 监听一个事件
+	@ object.off(event, fn) // 取消监听
+	@ object.once(event, fn) // 只监听一次事件
+	@ object.dispacth(event, arg) // 触发一个事件
+*/
+
+var Events = function () {
+    function Events() {
+        _classCallCheck(this, Events);
+
+        // 定义的事件与回调
+        this.defineEvent = {};
+    }
+    // 注册事件
+
+
+    _createClass(Events, [{
+        key: "register",
+        value: function register(event, cb) {
+            if (!this.defineEvent[event]) {
+                this.defineEvent[event] = [cb];
+            } else {
+                this.defineEvent[event].push(cb);
+            }
+        }
+        // 派遣事件
+
+    }, {
+        key: "dispatch",
+        value: function dispatch(event, arg) {
+            if (this.defineEvent[event]) {
+                {
+                    for (var i = 0, len = this.defineEvent[event].length; i < len; ++i) {
+                        this.defineEvent[event][i] && this.defineEvent[event][i](arg);
+                    }
+                }
+            }
+        }
+        // on 监听
+
+    }, {
+        key: "on",
+        value: function on(event, cb) {
+            return this.register(event, cb);
+        }
+        // off 方法
+
+    }, {
+        key: "off",
+        value: function off(event, cb) {
+            var _this = this;
+
+            if (this.defineEvent[event]) {
+                if (typeof cb == "undefined") {
+                    delete this.defineEvent[event]; // 表示全部删除 
+                } else {
+                    var _loop = function _loop(i, len) {
+                        if (cb == _this.defineEvent[event][i]) {
+                            _this.defineEvent[event][i] = null; // 标记为空 - 防止dispath 长度变化 
+                            // 延时删除对应事件
+                            setTimeout(function () {
+                                return _this.defineEvent[event].splice(i, 1);
+                            }, 0);
+                            return "break";
+                        }
+                    };
+
+                    // 遍历查找 
+                    for (var i = 0, len = this.defineEvent[event].length; i < len; ++i) {
+                        var _ret = _loop(i, len);
+
+                        if (_ret === "break") break;
+                    }
+                }
+            }
+        }
+
+        // once 方法，监听一次
+
+    }, {
+        key: "once",
+        value: function once(event, cb) {
+            var _this2 = this;
+
+            var onceCb = function onceCb() {
+                cb && cb();
+                _this2.off(event, onceCb);
+            };
+            this.register(event, onceCb);
+        }
+    }]);
+
+    return Events;
+}();
+
+exports.default = Events;
+
+},{}],331:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
@@ -17368,117 +17488,6 @@ var Chain = function () {
 }();
 
 exports.default = Chain;
-
-},{}],331:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/*
-	@ author: leeenx
-	@ 事件封装
-	@ object.on(event, fn) // 监听一个事件
-	@ object.off(event, fn) // 取消监听
-	@ object.once(event, fn) // 只监听一次事件
-	@ object.dispacth(event, arg) // 触发一个事件
-*/
-
-var Events = function () {
-    function Events() {
-        _classCallCheck(this, Events);
-
-        // 定义的事件与回调
-        this.defineEvent = {};
-    }
-    // 注册事件
-
-
-    _createClass(Events, [{
-        key: "register",
-        value: function register(event, cb) {
-            if (!this.defineEvent[event]) {
-                this.defineEvent[event] = [cb];
-            } else {
-                this.defineEvent[event].push(cb);
-            }
-        }
-        // 派遣事件
-
-    }, {
-        key: "dispatch",
-        value: function dispatch(event, arg) {
-            if (this.defineEvent[event]) {
-                {
-                    for (var i = 0, len = this.defineEvent[event].length; i < len; ++i) {
-                        this.defineEvent[event][i] && this.defineEvent[event][i](arg);
-                    }
-                }
-            }
-        }
-        // on 监听
-
-    }, {
-        key: "on",
-        value: function on(event, cb) {
-            return this.register(event, cb);
-        }
-        // off 方法
-
-    }, {
-        key: "off",
-        value: function off(event, cb) {
-            var _this = this;
-
-            if (this.defineEvent[event]) {
-                if (typeof cb == "undefined") {
-                    delete this.defineEvent[event]; // 表示全部删除 
-                } else {
-                    var _loop = function _loop(i, len) {
-                        if (cb == _this.defineEvent[event][i]) {
-                            _this.defineEvent[event][i] = null; // 标记为空 - 防止dispath 长度变化 
-                            // 延时删除对应事件
-                            setTimeout(function () {
-                                return _this.defineEvent[event].splice(i, 1);
-                            }, 0);
-                            return "break";
-                        }
-                    };
-
-                    // 遍历查找 
-                    for (var i = 0, len = this.defineEvent[event].length; i < len; ++i) {
-                        var _ret = _loop(i, len);
-
-                        if (_ret === "break") break;
-                    }
-                }
-            }
-        }
-
-        // once 方法，监听一次
-
-    }, {
-        key: "once",
-        value: function once(event, cb) {
-            var _this2 = this;
-
-            var onceCb = function onceCb() {
-                cb && cb();
-                _this2.off(event, onceCb);
-            };
-            this.register(event, onceCb);
-        }
-    }]);
-
-    return Events;
-}();
-
-exports.default = Events;
 
 },{}],332:[function(require,module,exports){
 "use strict";

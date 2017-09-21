@@ -5,7 +5,7 @@ html,body {
 	height: 100%;
 	margin: 0;
 	padding: 0; 
-	background-color: #aaa;
+	background-color: #ece060;
 }
 
 .snake-game {
@@ -36,7 +36,7 @@ html,body {
 	height: 53px; 
 	background: url(../images/switch@2x.png) 0 0 no-repeat; 
 	background-size: 100% 100%; 
-	top: 150px;
+	top: 160px;
 	right: 30px; 
 	border: 0 none; 
 	appearance: none; 
@@ -50,7 +50,7 @@ html,body {
 	height: 50px; 
 	background: url(../images/pause@2x.png) 0 0 no-repeat; 
 	background-size: 100% 100%; 
-	top: 150px;
+	top: 160px;
 	left: 30px; 
 	border: 0 none; 
 	appearance: none; 
@@ -142,8 +142,41 @@ html,body {
 	background-color: rgba(188, 188, 188, .7); 
 }
 
+.snake-timer {
+	position: absolute; 
+	top: 172px; 
+	right: 0; 
+	left: 0; 
+	margin: 0 auto; 
+	width: 200px; 
+	text-align: center; 
+	font-size: 16px; 
+	font-weight: bold; 
+}
 
+.snake-speed {
+	position: absolute; 
+	top: 206px; 
+	right: 0; 
+	left: 0; 
+	margin: 0 auto; 
+	width: 120px; 
+	height: 4px; 
+	border-radius: 2px; 
+	background-color: #ffeeee; 
+	box-shadow: inset 1px 1px 3px -1px rgba(0, 0, 0, .3); 
+}
 
+.snake-speed-thumb {
+	position: absolute; 
+	top: -3px; 
+	left: 50%; 
+	width: 10px; 
+	height: 10px; 
+	border-radius: 100%; 
+	box-shadow: 0 2px 4px rgba(0, 0, 0, .3); 
+	background-color: #fff; 
+}
 
 
 

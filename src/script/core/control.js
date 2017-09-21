@@ -13,7 +13,7 @@ import timer from '../lib/utils/timer';
 import randomList from '../lib/utils/randomList'; 
 
 // 事件
-import Events from '../lib/utils/events'; 
+import Events from '../lib/utils/Events'; 
 
 // control 类
 export default class control { 
@@ -86,7 +86,7 @@ export default class control {
 		this.view.init({width, height, row, column, border, color, food, data}); 
 
 		// interval 的间隔
-		this.interval = 300; 
+		this.interval = 300 / this.speedScalar; 
 
 		// 定时更新view
 		this.intervalID = timer.setInterval(this.update, this.interval); 
@@ -104,7 +104,12 @@ export default class control {
 		this.directions = []; 
 
 		// 总计时
-		timer.setTimeout(() => this.gameover("timeout"), 300000);
+		if(config.time > 0) {
+			let time = config.time / 1000; 
+			timer.setTimeout(() => this.gameover("timeout"), config); 
+			// 倒数
+			timer.setInterval(() => this.event.dispatch("countdown", --time), 1000); 
+		}
 
 	}
 	// 销毁 
@@ -157,7 +162,7 @@ export default class control {
 	// start
 	start() { 
 		if(this.GAMEOVER) return ;
-		this.resume(); 
+		// this.resume(); 
 		// 蛇的随机运动方向 
 		let {leader, zone} = this.model; 
 		// 控制方向的变量是 this.direction。this.nextDirection 表示下一个方向
@@ -170,6 +175,8 @@ export default class control {
 				1
 			)
 		); 
+
+		this.update(); 
 	}
 
 	// 重新开始 
