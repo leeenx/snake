@@ -300,7 +300,8 @@ snake.event.on("countdown", (time) => console.log("剩余时间：", time));
 
 ## 结语
 
-下面是本文介绍的贪吃蛇的线上 [DEMO](https://leeenx.github.io/snake/src/snake.html) 的二维码：
+下面是本文介绍的贪吃蛇的线上 [DEMO](https://leeenx.github.io/snake/src/snake.html) 的二维码： 
+
 ![demo](http://7xv39r.com1.z0.glb.clouddn.com/20170923_qr.png) 
 
 游戏的源码托管在：https://github.com/leeenx/snake
