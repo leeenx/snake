@@ -86,7 +86,7 @@ export default class control {
 		this.view.init({width, height, row, column, border, color, food, data}); 
 
 		// interval 的间隔
-		this.interval = 300 / this.speedScalar; 
+		this.interval = 300 / this.speedScalar ; 
 
 		// 定时更新view
 		this.intervalID = timer.setInterval(this.update, this.interval); 
@@ -106,7 +106,7 @@ export default class control {
 		// 总计时
 		if(config.time > 0) {
 			let time = config.time / 1000; 
-			timer.setTimeout(() => this.gameover("timeout"), config); 
+			timer.setTimeout(() => this.gameover("timeout"), config.time); 
 			// 倒数
 			timer.setInterval(() => this.event.dispatch("countdown", --time), 1000); 
 		}
