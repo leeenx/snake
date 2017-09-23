@@ -7887,7 +7887,6 @@ var model = function () {
 
 
 		this.snake.unshift = function (index) {
-			console.log("unshift", index);
 			unshift.call(_this.snake, index);
 			// 更新 zone
 			_this.updateZone(index, "snake", "unshift");
@@ -7990,7 +7989,7 @@ var model = function () {
 	}, {
 		key: 'updateZone',
 		value: function updateZone(index, fill, type) {
-			console.log(index, fill, type);
+			// console.log(index, fill, type); 
 			// fill == undefine 表示 free
 			this.zone[index].fill = fill;
 			// leader 更新
@@ -8087,7 +8086,6 @@ var model = function () {
 		value: function feed() {
 			// 赌一次
 			var rnd = this.bet();
-			console.log(">>>>>>>>>>>", rnd);
 			if (rnd !== -1) {
 				this.food = rnd;
 				return;
