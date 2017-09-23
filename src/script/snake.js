@@ -7887,6 +7887,7 @@ var model = function () {
 
 
 		this.snake.unshift = function (index) {
+			console.log("unshift", index);
 			unshift.call(_this.snake, index);
 			// 更新 zone
 			_this.updateZone(index, "snake", "unshift");
@@ -7989,9 +7990,9 @@ var model = function () {
 	}, {
 		key: 'updateZone',
 		value: function updateZone(index, fill, type) {
+			console.log(index, fill, type);
 			// fill == undefine 表示 free
 			this.zone[index].fill = fill;
-			// console.log(index, fill, type); 
 			// leader 更新
 			this.updateLeader();
 		}
@@ -8070,24 +8071,40 @@ var model = function () {
 			this.bar = bar;
 		}
 
+		// 赌博
+
+	}, {
+		key: 'bet',
+		value: function bet() {
+			var rnd = Math.random() * this.zone.length >> 0;
+			return this.zone[rnd].fill === undefined ? rnd : -1;
+		}
+
 		// 随机喂食
 
 	}, {
 		key: 'feed',
 		value: function feed() {
-			var index = -1,
-			    start = 0,
-			    count = this.zone.length - this.snake.length,
-			    end = (Math.random() * count >> 0) + 1;
-			if (0 === count) {
-				// 无法投食
+			// 赌一次
+			var rnd = this.bet();
+			console.log(">>>>>>>>>>>", rnd);
+			if (rnd !== -1) {
+				this.food = rnd;
+				return;
+			}
+			var index = 0,
+			    count = 0,
+			    len = this.zone.length - this.snake.length;
+			rnd = (Math.random() * count >> 0) + 1;
+			// 无法投食
+			if (0 === len) {
 				this.food = undefined;
 				return;
 			}
-			while (start !== end) {
-				this.zone[++index].fill === undefined && ++start;
+			while (rnd !== count) {
+				this.zone[index++].fill === undefined && ++count;
 			}
-			this.food = index;
+			this.food = index - 1;
 		}
 	}]);
 

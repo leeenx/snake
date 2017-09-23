@@ -22,7 +22,7 @@ export default class model {
 		// 封装 snake 的 unshift, push, shift, pop 方法
 		let {unshift, push, shift, pop} = this.snake; 
 
-		this.snake.unshift = (index) => {
+		this.snake.unshift = (index) => { 
 			unshift.call(this.snake, index); 
 			// 更新 zone
 			this.updateZone(index, "snake", "unshift"); 
@@ -115,9 +115,9 @@ export default class model {
 
 	// zone 区域更新状态
 	updateZone(index, fill, type) { 
+		// console.log(index, fill, type); 
 		// fill == undefine 表示 free
 		this.zone[index].fill = fill; 
-		// console.log(index, fill, type); 
 		// leader 更新
 		this.updateLeader(); 
 	}
@@ -177,20 +177,32 @@ export default class model {
 		this.bar = bar; 
 	}
 
+	// 赌博
+	bet() {
+		let rnd = Math.random() * this.zone.length >> 0; 
+		return this.zone[rnd].fill === undefined ? rnd : -1; 
+	}
+
 	// 随机喂食
 	feed() {
-		let index = -1,  
-		start = 0,  
-		count = this.zone.length - this.snake.length,  
-		end = (Math.random() * count>>0) + 1; 
-		if(0 === count) {
-			// 无法投食
+		// 赌一次
+		let rnd = this.bet(); 
+		if(rnd !== -1) { 
+			this.food = rnd; 
+			return; 
+		}
+		let index = 0,  
+		count = 0,  
+		len = this.zone.length - this.snake.length; 
+		rnd = (Math.random() * count>>0) + 1; 
+		// 无法投食
+		if(0 === len) {
 			this.food = undefined; 
 			return ;
-		}
-		while(start !== end) {
-			this.zone[++index].fill === undefined && ++start; 
 		} 
-		this.food = index; 
+		while(rnd !== count) {
+			this.zone[index++].fill === undefined && ++count; 
+		} 
+		this.food = index - 1; 
 	}
 }
