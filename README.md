@@ -8,7 +8,7 @@
 
 ## MVC设计模式
 
-基于贪吃蛇的经典，笔者在实现它时也使用一种经典的设计模型：MVC（即：Modle - View - Control）。游戏的各种状态与数据结构由 Model 来管理；View 用于显示 Model 的变化；用户与游戏的交互由 Control 完成（Control 提供各种游戏API接口）。
+基于贪吃蛇的经典，笔者在实现它时也使用一种经典的设计模型：MVC（即：Model - View - Control）。游戏的各种状态与数据结构由 Model 来管理；View 用于显示 Model 的变化；用户与游戏的交互由 Control 完成（Control 提供各种游戏API接口）。
 
 Model 是游戏的核心也是本文的主要内容；View 会涉及到部分性能问题；Control 负责业务逻辑。 这样设计的好处是： Model完全独立，View 是 Model 的状态机，Model 与 View 都由 Control 来驱动。
 
@@ -208,7 +208,7 @@ if(food === -1) food = feed();
 
 View 的任务主要有两个：
 1. 绘制游戏的界面；
-2. 渲染 Modle 里的各种数据结构
+2. 渲染 Model 里的各种数据结构
 
 也就是说 View 是使用渲染引擎还原设计稿的过程。本文的目的是介绍「贪吃蛇」的实现思路，如何使用一个渲染引擎不是本文讨论的范畴，笔者想介绍的是：「如何提高渲染的效率」。
 
@@ -298,7 +298,7 @@ snake.event.on("countdown", (time) => console.log("剩余时间：", time));
 ```
 
 「驱动 Model 」只做一件事 ------ **将 Model 的蛇的方向更新为用户指定的方向**。
-「同步 View 与 Mode」也比较简单，检查 Model 是否有更新，如果有更新通知 View 更新游戏界面。
+「同步 View 与 Model 」也比较简单，检查 Model 是否有更新，如果有更新通知 View 更新游戏界面。
 
 ## 结语
 
