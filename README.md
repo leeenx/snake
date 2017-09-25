@@ -285,6 +285,7 @@ Control 主要做 3 件事：
 | speed | property | 蛇的移动速度 |
 
 事件如下：
+
 | name | detail | 
 | :-- | :-- |
 | countdown |  倒时计 |
