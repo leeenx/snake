@@ -129,11 +129,11 @@ document.body.addEventListener("touchmove", (e) => e.preventDefault() );
 
 	let checkDirection = function(x, y) {
 		let radian = Math.asin( y / Math.sqrt( Math.pow(x, 2) + Math.pow(y, 2)) ); 
-		// 1~2区间
+		// 1~2象限
 		if(x > 0 && y < 0 || x > 0 && y > 0) {
 			radian += deg90; 
 		}
-		// 3~4区间
+		// 3~4象限
 		else if(x < 0 && y > 0 || x < 0 && y < 0) {
 			radian = deg270 - radian; 
 		}
