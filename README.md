@@ -273,7 +273,7 @@ Control 主要做 3 件事：
 
 「游戏与用户的互动」是指向外提供游戏过程需要使用到的 APIs 与 各类事件。笔者规划的 APIs 如下：
 
-| name | type | deltail |
+| name | type | detail |
 | :-- | :-- | :-- |
 | init | method | 初始化游戏 |
 | start | method | 开始游戏 |
