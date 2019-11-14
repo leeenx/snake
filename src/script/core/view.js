@@ -3,9 +3,6 @@
 	@ 贪吃蛇的 view 类 
 */
 
-// gsap 方法
-import '../lib/gsap/TweenMax'; 
-
 // 获取 Graphics 的 content-box
 import '../lib/utils/getContentBoxSize'; 
 
