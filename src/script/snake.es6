@@ -6,7 +6,7 @@
 */
 
 // 向前兼容
-import 'babel-polyfill'; 
+import '@babel/polyfill'; 
 
 // model
 import SnakeModel from './core/model'; 

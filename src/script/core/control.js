@@ -13,7 +13,7 @@ import timer from '../lib/utils/timer';
 import randomList from '../lib/utils/randomList'; 
 
 // 事件
-import Events from '../lib/utils/Events'; 
+import Events from '../lib/utils/events'; 
 
 // control 类
 export default class control { 

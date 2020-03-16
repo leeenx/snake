@@ -7,7 +7,7 @@
 import randomList from '../lib/utils/randomList'; 
 
 // 链表类
-import Chain from '../lib/utils/chain'; 
+import Chain from '../lib/utils/Chain'; 
 
 // model 类
 export default class model {

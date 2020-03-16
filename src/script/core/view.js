@@ -10,7 +10,7 @@ import '../lib/utils/getContentBoxSize';
 import '../lib/utils/noHello'; 
 
 // 链表类
-import Chain from '../lib/utils/chain'; 
+import Chain from '../lib/utils/Chain'; 
 
 
 // view 类
